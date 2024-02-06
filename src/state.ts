@@ -6,7 +6,7 @@ export interface State {
   path: string;
   bucket: string;
   cacheHitKind: CacheHitKindState;
-  forceUpload: string;
+  skipUploadOnHit: string;
   targetFileName: string;
   rootDir: string;
 }
@@ -17,7 +17,7 @@ export function saveState(state: State): void {
   core.saveState('bucket', state.bucket);
   core.saveState('path', state.path);
   core.saveState('cache-hit-kind', state.cacheHitKind);
-  core.saveState('force-upload', state.forceUpload);
+  core.saveState('skip-upload-on-hit', state.skipUploadOnHit);
   core.saveState('target-file-name', state.targetFileName);
   core.saveState('root-dir', state.rootDir);
 }
@@ -27,7 +27,7 @@ export function getState(): State {
     path: core.getState('path'),
     bucket: core.getState('bucket'),
     cacheHitKind: core.getState('cache-hit-kind') as CacheHitKindState,
-    forceUpload: core.getState('force-upload'),
+    skipUploadOnHit: core.getState('skip-upload-on-hit'),
     targetFileName: core.getState('target-file-name'),
     rootDir: core.getState('root-dir'),
   };

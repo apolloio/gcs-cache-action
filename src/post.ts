@@ -11,7 +11,7 @@ import { createTar } from './tar-utils';
 async function main() {
   const state = getState();
 
-  if (state.cacheHitKind === 'exact' && state.forceUpload != 'true') {
+  if (state.cacheHitKind === 'exact' && state.skipUploadOnHit == 'true') {
     console.log(
       '🌀 Skipping uploading cache as the cache was hit by exact match.',
     );
@@ -30,7 +30,7 @@ async function main() {
 
   core.debug(`Target file name: ${targetFileName}.`);
 
-  if (targetFileExists && state.forceUpload != 'true') {
+  if (targetFileExists && state.skipUploadOnHit == 'true') {
     console.log(
       '🌀 Skipping uploading cache as it already exists (probably due to another job).',
     );

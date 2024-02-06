@@ -5,7 +5,7 @@ export interface Inputs {
   path: string;
   key: string;
   restoreKeys: string[];
-  forceUpload: string;
+  skipUploadOnHit: string;
   rootDir: string;
 }
 
@@ -14,7 +14,7 @@ export function getInputs(): Inputs {
     bucket: core.getInput('bucket', { required: true }),
     rootDir: core.getInput('root-dir', { required: false }),
     path: core.getInput('path', { required: true }),
-    forceUpload: core.getInput('force-upload', { required: false }),
+    skipUploadOnHit: core.getInput('skip-upload-on-hit', { required: false }),
     key: core.getInput('key', { required: true }),
     restoreKeys: core
       .getInput('restore-keys')
