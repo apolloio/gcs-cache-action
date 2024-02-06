@@ -20,8 +20,8 @@ inputs:
     description: Restore directory
     default: ''
     required: false
-  force-upload:
-    description: Key to upload forcely
+  skip-upload-on-hit:
+    description: Skip uploading if cache was hit
     default: 'false'
     required: false
 

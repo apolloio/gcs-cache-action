@@ -45,14 +45,14 @@ contain your target Google Cloud Storage bucket. **As simple as that.**
 
 This GitHub action can take several inputs to configure its behaviors:
 
-| Name         | Type     | Default | Example                                                               | Description                                                         |
-|--------------|----------|---------|-----------------------------------------------------------------------|---------------------------------------------------------------------|
-| bucket       | String   | ø       | `my-ci-cache`                                                         | The name of the Google Cloud Storage bucket to use                  |
-| path         | String[] | ø       | `node_modules`                                                        | One or more path to store                                           |
-| key          | String   | ø       | `node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}` | Key to use as cache name                                            |
-| restore-keys | String[] | ø       | `node-modules-${{ runner.os }}-`                                      | Alternative keys to use when looking for the best cache available   |
-| root-dir     | String   | ø       | `cache`                                                               | Directory where the cache directory is to be restored               |
-| force-upload | Boolean  | false   | `true`                                                                | Whether to force cache upload, even if there was an exact cache hit |
+| Name               | Type     | Default | Example                                                               | Description                                                       |
+| ------------------ | -------- | ------- | --------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| bucket             | String   | ø       | `my-ci-cache`                                                         | The name of the Google Cloud Storage bucket to use                |
+| path               | String[] | ø       | `node_modules`                                                        | One or more path to store                                         |
+| key                | String   | ø       | `node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}` | Key to use as cache name                                          |
+| restore-keys       | String[] | ø       | `node-modules-${{ runner.os }}-`                                      | Alternative keys to use when looking for the best cache available |
+| root-dir           | String   | ø       | `cache`                                                               | Directory where the cache directory is to be restored             |
+| skip-upload-on-hit | Boolean  | false   | `true`                                                                | Whether to skip cache upload if there was a cache hit             |
 
 **Note**: the `path` and `restore-keys` inputs can contains multiple value separated by a new line.
 
