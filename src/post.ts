@@ -18,6 +18,7 @@ async function main() {
     return;
   }
 
+  core.info(`[post.ts] Got state: ${JSON.stringify(state)}.`);
   const bucket = new Storage().bucket(state.bucket);
   const targetFileName = state.targetFileName;
   const [targetFileExists] = await bucket

@@ -53,6 +53,7 @@ function main() {
             console.log('🌀 Skipping uploading cache as the cache was hit by exact match.');
             return;
         }
+        core.info(`[post.ts] Got state: ${JSON.stringify(state)}.`);
         const bucket = new storage_1.Storage().bucket(state.bucket);
         const targetFileName = state.targetFileName;
         const [targetFileExists] = yield bucket
@@ -151,14 +152,42 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getState = exports.saveState = void 0;
 const core = __importStar(__nccwpck_require__(2186));
+const fs = __importStar(__nccwpck_require__(7147));
+function readStateFile() {
+    const path = process.env['GITHUB_STATE'];
+    if (!path) {
+        core.debug('readStateFile path is empty');
+        return;
+    }
+    core.info(`readFile path ${path}`);
+    try {
+        const data = fs.readFileSync(path, 'utf8');
+        core.info(`readFile data: ${data}`);
+    }
+    catch (err) {
+        console.error(err);
+    }
+    [
+        'STATE_path',
+        'STATE_bucket',
+        'STATE_cache-hit-kind',
+        'STATE_skip-upload-on-hit',
+        'STATE_target-file-name',
+        'STATE_root-dir',
+    ].forEach((name) => {
+        core.info(`process.env[${name}]: ${process.env[name] || ''}`);
+    });
+}
 function saveState(state) {
-    core.debug(`Saving state: ${JSON.stringify(state)}.`);
+    core.info(`[state.ts] Saving state: ${JSON.stringify(state)}.`);
     core.saveState('bucket', state.bucket);
     core.saveState('path', state.path);
     core.saveState('cache-hit-kind', state.cacheHitKind);
     core.saveState('skip-upload-on-hit', state.skipUploadOnHit);
     core.saveState('target-file-name', state.targetFileName);
     core.saveState('root-dir', state.rootDir);
+    core.info(`[state.ts saveState] readStateFile`);
+    readStateFile();
 }
 exports.saveState = saveState;
 function getState() {
@@ -170,7 +199,8 @@ function getState() {
         targetFileName: core.getState('target-file-name'),
         rootDir: core.getState('root-dir'),
     };
-    core.debug(`Loaded state: ${JSON.stringify(state)}.`);
+    core.info(`[state.ts getState] readStateFile`);
+    readStateFile();
     return state;
 }
 exports.getState = getState;
