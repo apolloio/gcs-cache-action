@@ -10,7 +10,8 @@ import { createTar } from './tar-utils';
 
 async function main() {
   const state = getState();
-
+  // state.cacheHitKind might be empty because of an intermittent issue where state isn't propagated
+  // to post tasks, in that case we upload the new cache.
   if (state.cacheHitKind === 'exact' && state.skipUploadOnHit == 'true') {
     console.log(
       '🌀 Skipping uploading cache as the cache was hit by exact match.',
@@ -18,7 +19,6 @@ async function main() {
     return;
   }
 
-  core.info(`[post.ts] Got state: ${JSON.stringify(state)}.`);
   const bucket = new Storage().bucket(state.bucket);
   const targetFileName = state.targetFileName;
   const [targetFileExists] = await bucket
