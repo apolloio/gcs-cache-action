@@ -1,32 +1,6 @@
 import * as core from '@actions/core';
-import * as fs from 'fs';
 
 export type CacheHitKindState = 'exact' | 'partial' | 'none';
-
-function readStateFile() {
-  const path = process.env['GITHUB_STATE'];
-  if (!path) {
-    core.debug('readStateFile path is empty');
-    return;
-  }
-  core.info(`readFile path ${path}`);
-  try {
-    const data = fs.readFileSync(path, 'utf8');
-    core.info(`readFile data: ${data}`);
-  } catch (err) {
-    console.error(err);
-  }
-  [
-    'STATE_path',
-    'STATE_bucket',
-    'STATE_cache-hit-kind',
-    'STATE_skip-upload-on-hit',
-    'STATE_target-file-name',
-    'STATE_root-dir',
-  ].forEach((name) => {
-    core.info(`process.env[${name}]: ${process.env[name] || ''}`);
-  });
-}
 
 export interface State {
   path: string;
@@ -37,8 +11,14 @@ export interface State {
   rootDir: string;
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+}
+
 export function saveState(state: State): void {
-  core.info(`[state.ts] Saving state: ${JSON.stringify(state)}.`);
+  core.debug(`[state.ts] Saving state: ${JSON.stringify(state)}.`);
 
   core.saveState('bucket', state.bucket);
   core.saveState('path', state.path);
@@ -46,23 +26,34 @@ export function saveState(state: State): void {
   core.saveState('skip-upload-on-hit', state.skipUploadOnHit);
   core.saveState('target-file-name', state.targetFileName);
   core.saveState('root-dir', state.rootDir);
-
-  core.info(`[state.ts saveState] readStateFile`);
-  readStateFile();
 }
 
-export function getState(): State {
-  const state = {
-    path: core.getState('path'),
-    bucket: core.getState('bucket'),
-    cacheHitKind: core.getState('cache-hit-kind') as CacheHitKindState,
-    skipUploadOnHit: core.getState('skip-upload-on-hit'),
-    targetFileName: core.getState('target-file-name'),
-    rootDir: core.getState('root-dir'),
+export async function getState(): Promise<State> {
+  const state: State = {
+    path: '',
+    bucket: '',
+    cacheHitKind: 'none',
+    skipUploadOnHit: '',
+    targetFileName: '',
+    rootDir: '',
   };
 
-  core.info(`[state.ts getState] readStateFile`);
-  readStateFile();
+  // Action state is empty on post tasks sometimes, so we're retrying to see
+  // see if it's an environment synchronization issue
+  for (let attempt = 1; attempt < 5; attempt++) {
+    state.path = core.getState('path');
+    state.bucket = core.getState('bucket');
+    state.cacheHitKind = core.getState('cache-hit-kind') as CacheHitKindState;
+    state.skipUploadOnHit = core.getState('skip-upload-on-hit');
+    state.targetFileName = core.getState('target-file-name');
+    state.rootDir = core.getState('root-dir');
+
+    if (state.rootDir) {
+      break;
+    }
+    core.warning(`[state.ts] Failed to get state on attempt ${attempt}/5`);
+    await sleep(attempt * 100);
+  }
 
   return state;
 }

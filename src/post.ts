@@ -9,7 +9,12 @@ import { getState } from './state';
 import { createTar } from './tar-utils';
 
 async function main() {
-  const state = getState();
+  const state = await getState();
+  core.info(
+    `[post.ts] getInput('bucket') ${core.getInput('bucket', {
+      required: true,
+    })}`,
+  );
 
   if (state.cacheHitKind === 'exact' && state.skipUploadOnHit == 'true') {
     console.log(
