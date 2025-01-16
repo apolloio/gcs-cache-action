@@ -49,6 +49,10 @@ const tar_utils_1 = __nccwpck_require__(8429);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const state = (0, state_1.getState)();
+        if (!state.targetFileName) {
+            core.warning('🚨 Skipping uploading cache because the target file name is missing.');
+            return;
+        }
         // state.cacheHitKind might be empty because of an intermittent issue where state isn't propagated
         // to post tasks, in that case we upload the new cache.
         if (state.cacheHitKind === 'exact' && state.skipUploadOnHit == 'true') {
