@@ -14,7 +14,7 @@ export function getInputs(): Inputs {
     bucket: core.getInput('bucket', { required: true }),
     rootDir: core.getInput('root-dir', { required: false }),
     path: core.getInput('path', { required: true }),
-    skipUploadOnHit: core.getInput('skip-upload-on-hit', { required: false }),
+    skipUploadOnHit: core.getInput('skip-upload-on-hit') || 'true',
     key: core.getInput('key', { required: true }),
     restoreKeys: core
       .getInput('restore-keys')

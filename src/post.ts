@@ -10,6 +10,14 @@ import { createTar } from './tar-utils';
 
 async function main() {
   const state = getState();
+
+  if (!state.targetFileName) {
+    core.warning(
+      '🚨 Skipping uploading cache because the target file name is missing.',
+    );
+    return;
+  }
+
   // state.cacheHitKind might be empty because of an intermittent issue where state isn't propagated
   // to post tasks, in that case we upload the new cache.
   if (state.cacheHitKind === 'exact' && state.skipUploadOnHit == 'true') {
