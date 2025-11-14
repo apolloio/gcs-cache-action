@@ -264,6 +264,17 @@ function getTarCompressionMethod() {
         }
     });
 }
+function getSizeInBytes(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const stats = yield Promise.resolve().then(() => __importStar(__nccwpck_require__(3292))).then((fs) => fs.stat(path));
+        return stats.size;
+    });
+}
+function humanFileSize(size) {
+    const i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    return (size / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+}
 function createTar(archivePath, paths, cwd) {
     return __awaiter(this, void 0, void 0, function* () {
         const compressionMethod = yield getTarCompressionMethod();
@@ -284,6 +295,8 @@ function createTar(archivePath, paths, cwd) {
             cwd,
             ...paths,
         ]);
+        const archiveSize = yield getSizeInBytes(archivePath);
+        console.log(`🔹 Created archive size: ${humanFileSize(archiveSize)}.`);
         return compressionMethod;
     });
 }
@@ -291,6 +304,8 @@ exports.createTar = createTar;
 function extractTar(archivePath, compressionMethod, cwd) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`🔹 Detected '${compressionMethod}' compression method from object metadata.`);
+        const archiveSize = yield getSizeInBytes(archivePath);
+        console.log(`🔹 Extracting archive size: ${humanFileSize(archiveSize)}.`);
         const compressionArgs = compressionMethod === CompressionMethod.GZIP
             ? ['-z']
             : compressionMethod === CompressionMethod.ZSTD_WITHOUT_LONG
@@ -79206,6 +79221,14 @@ module.exports = require("events");
 
 "use strict";
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ 3292:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
 
 /***/ }),
 
