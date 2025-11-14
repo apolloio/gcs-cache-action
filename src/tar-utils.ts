@@ -40,6 +40,17 @@ async function getTarCompressionMethod(): Promise<CompressionMethod> {
   }
 }
 
+async function getSizeInBytes(path: string): Promise<number> {
+  const stats = await import('fs/promises').then((fs) => fs.stat(path));
+  return stats.size;
+}
+
+function humanFileSize(size: number): string {
+  const i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  return (size / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+}
+
 export async function createTar(
   archivePath: string,
   paths: string[],
@@ -67,6 +78,9 @@ export async function createTar(
     ...paths,
   ]);
 
+  const archiveSize = await getSizeInBytes(archivePath);
+  console.log(`🔹 Created archive size: ${humanFileSize(archiveSize)}.`);
+
   return compressionMethod;
 }
 
@@ -78,6 +92,9 @@ export async function extractTar(
   console.log(
     `🔹 Detected '${compressionMethod}' compression method from object metadata.`,
   );
+
+  const archiveSize = await getSizeInBytes(archivePath);
+  console.log(`🔹 Extracting archive size: ${humanFileSize(archiveSize)}.`);
 
   const compressionArgs =
     compressionMethod === CompressionMethod.GZIP
